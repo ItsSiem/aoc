@@ -2,8 +2,7 @@ use std::fs;
 
 fn main() {
     let file_path = "inputs/01";
-    let contents = fs::read_to_string(file_path)
-        .expect("Should have been able to read the file");
+    let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
     let mut a = Vec::<i32>::new();
     let mut b = Vec::<i32>::new();
     let lines = contents.lines();
@@ -22,5 +21,18 @@ fn main() {
         sum += (a[i] - b[i]).abs();
         i += 1;
     }
-    println!("{}", sum);
+    println!("Part one: {}", sum);
+
+    sum = 0;
+    for e in a {
+        let mut c = 0;
+        for d in &b {
+            if e == *d {
+                c += 1;
+            }
+        }
+        sum += e * c;
+    }
+
+    println!("Part two: {}", sum);
 }
