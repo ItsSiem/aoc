@@ -1,7 +1,60 @@
-use std::fs;
+use std::{fs};
 
 fn main() {
     day_one();
+    day_two();
+}
+
+fn day_two() {
+    println!("== Day Two ==");
+    let file_path = "inputs/02";
+    let input = fs::read_to_string(file_path).expect("Should have been able to read the file");
+    let input_lines = input.lines();
+
+    let mut reports =
+        Vec::<Vec<i32>>::with_capacity(input_lines.clone().collect::<Vec<&str>>().len());
+
+    let mut i = 0;
+    for line in input_lines {
+        reports.insert(i, vec![]);
+        let levels = line.split(" ").collect::<Vec<&str>>();
+        for level in levels {
+            reports[i].push(level.parse::<i32>().unwrap());
+        }
+        i += 1;
+    }
+
+    let mut safe_reports = 0;
+    for report in reports {
+        if is_safe(report) {
+            safe_reports += 1;
+        }
+    }
+    println!("Part one: {}", safe_reports);
+}
+
+fn is_safe(report: Vec<i32>) -> bool {
+    let mut s = report[0] - report[1];
+    if s == 0 {
+        return false;
+    }
+    s = s / s.abs();
+
+    for i in 1..report.len() - 1 {
+        if report[i] - report[i + 1] == 0 {
+            return false;
+        }
+        if s != (report[i] - report[i + 1]) / (report[i] - report[i + 1]).abs() {
+            return false;
+        }
+    }
+
+    for i in 0..report.len() - 1 {
+        if (report[i] - report[i + 1]).abs() > 3 {
+            return false;
+        }
+    }
+    return true;
 }
 
 fn day_one() {
