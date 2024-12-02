@@ -1,4 +1,4 @@
-use std::{fs};
+use std::fs;
 
 fn main() {
     day_one();
@@ -25,12 +25,30 @@ fn day_two() {
     }
 
     let mut safe_reports = 0;
-    for report in reports {
+    for report in reports.clone() {
         if is_safe(report) {
             safe_reports += 1;
         }
     }
     println!("Part one: {}", safe_reports);
+
+    safe_reports = 0;
+    for report in reports.clone() {
+        if is_safe(report.clone()) {
+            safe_reports += 1;
+            continue;
+        }
+        for i in 0..report.len() {
+            let mut modified_report = report.clone();
+            _ = modified_report.remove(i);
+            if is_safe(modified_report) {
+                safe_reports += 1;
+                break;
+            }
+        }
+
+    }
+    println!("Part two: {}", safe_reports);
 }
 
 fn is_safe(report: Vec<i32>) -> bool {
