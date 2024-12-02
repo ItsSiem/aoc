@@ -1,6 +1,11 @@
 use std::fs;
 
 fn main() {
+    day_one();
+}
+
+fn day_one() {
+    println!("== Day One ==");
     let file_path = "inputs/01";
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
     let mut a = Vec::<i32>::new();
