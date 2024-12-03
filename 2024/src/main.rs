@@ -19,6 +19,26 @@ fn day_three() {
         sum += cap[1].parse::<i32>().unwrap() * cap[2].parse::<i32>().unwrap();
     }
     println!("Part one: {}", sum);
+
+    sum = 0;
+    let mut enabled = true;
+    let re = Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)|(?<do>do\(\))|(?<dont>don't\(\))").unwrap();
+    for cap in re.captures_iter(&input) {
+        println!("{:?}", cap);
+        if cap.get(3).is_some() {
+            enabled = true;
+            continue;
+        }
+        if cap.get(4).is_some() {
+            enabled = false;
+            continue;
+        }
+        if !enabled {
+            continue;
+        }
+        sum += cap[1].parse::<i32>().unwrap() * cap[2].parse::<i32>().unwrap();
+    }
+    println!("Part two: {}", sum);
 }
 
 fn day_two() {
