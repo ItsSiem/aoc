@@ -3,8 +3,6 @@ use aoc_runner_derive::{aoc, aoc_generator};
 #[aoc(day4, part1)]
 fn part1(input: &str) -> i32 {
     let grid: Vec<String> = input.lines().map(|v| v.to_string()).collect();
-    print_puzzle(grid.clone());
-    println!();
     
     let mut total = 0;
     total += horizontal(grid.clone());
@@ -50,8 +48,6 @@ fn vertical(puzzle: Vec<String>) -> i32 {
         lines[i] = chars[i].iter().collect::<String>();
     }
 
-    print_puzzle(lines.clone());
-
     return find_xmas(lines);
 }
 
@@ -64,7 +60,6 @@ fn diagonal(puzzle: Vec<String>) -> i32 {
             d1[x+y].push(puzzle[y].as_bytes()[x] as char);
         }
     }
-    println!("{:?}", d1);
 
     for i in 0..puzzle.len() + puzzle[0].len() {
         let mut s = "".to_string();
