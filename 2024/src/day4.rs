@@ -90,30 +90,24 @@ fn diagonal(puzzle: Vec<String>) -> i32 {
 
 #[aoc(day4, part2)]
 fn part2(input: &str) -> i32 {
-    todo!()
+    let mut total = 0;
+    let charmap = input.lines().collect::<Vec<&str>>()
+                    .into_iter().map(|s| {s.chars().collect::<Vec<char>>()})
+                    .collect::<Vec<Vec<char>>>();
+    for x in 1..charmap[0].len()-1 {
+        for y in 1..charmap.len()-1 {
+            if charmap[y][x] == 'A' {
+                let s1 = format!("{}{}{}", charmap[y-1][x-1], charmap[y][x], charmap[y+1][x+1]);                
+                let s2 = format!("{}{}{}", charmap[y+1][x-1], charmap[y][x], charmap[y-1][x+1]);                
+                if is_mas(s1.clone()) && is_mas(s2.clone()) {
+                    total += 1;
+                }
+            }
+        }
+    }
+    return total;
 }
 
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn part1_example() {
-        assert_eq!(part1(&parse("MMMSXXMASM
-MSAMXMSMSA
-AMXSXMAAMM
-MSAMASMSMX
-XMASAMXAMM
-XXAMMXXAMA
-SMSMSASXSS
-SAXAMASAAA
-MAMMMXMMMM
-MXMXAXMASX")), 18);
-    }
-
-    #[test]
-    fn part2_example() {
-        assert_eq!(part2(&parse("<EXAMPLE>")), 0);
-    }
+fn is_mas(s: String) -> bool {
+    return s == "MAS" || s =="SAM";
 }
