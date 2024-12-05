@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::{cmp::Ordering, collections::{HashMap, HashSet}};
 
 use aoc_runner_derive::{aoc, aoc_generator};
 #[aoc(day5, part1)]
@@ -17,18 +17,19 @@ fn part1(input: &str) -> i32 {
     return total;
 }
 
-fn get_rules(rules_string: &str) -> HashMap<i32, Vec<i32>> {
+fn get_rules(rules_string: &str) -> HashMap<i32, HashSet<i32>> {
     let mut rules = HashMap::new();
     for rule_string in rules_string.lines() {
         let split_rule = rule_string.split("|").collect::<Vec<&str>>();
         let page = split_rule[1].parse::<i32>().expect("couldnt parse page");
         let condition = split_rule[0].parse::<i32>().expect("couldnt parse conditon");
         if !rules.contains_key(&page) {
-            let conditions = vec!(condition);
+            let mut conditions: HashSet<i32> = HashSet::new();
+            conditions.insert(condition);
             rules.insert(page, conditions);
         }
         else {
-            rules.get_mut(&page).unwrap().push(condition);
+            rules.get_mut(&page).unwrap().insert(condition);
         }
     }
     return rules;
@@ -47,10 +48,10 @@ fn get_updates(updates_string: &str) -> Vec<Vec<i32>> {
     return updates;
 }
 
-fn is_update_valid(update: Vec<i32>, rules: HashMap<i32, Vec<i32>>) -> bool {
+fn is_update_valid(update: Vec<i32>, rules: HashMap<i32, HashSet<i32>>) -> bool {
     let mut visited = HashSet::new();
     for page in update.iter() {
-        if rules.get(&page).is_none() {
+        if !rules.contains_key(&page) {
             visited.insert(page);
             continue;
         }
@@ -66,6 +67,30 @@ fn is_update_valid(update: Vec<i32>, rules: HashMap<i32, Vec<i32>>) -> bool {
 }
 
 #[aoc(day5, part2)]
-fn part2(input: &str) -> String {
-    todo!()
+fn part2(input: &str) -> i32 {
+    let split_input = input.split("\n\n").collect::<Vec<&str>>();
+    let rules = get_rules(split_input[0]);
+    let updates = get_updates(split_input[1]);
+
+    let mut incorrect_updates = updates.iter()
+        .filter(|u| !is_update_valid(u.to_vec(), rules.clone()))
+        .cloned()
+        .collect::<Vec<Vec<i32>>>();
+
+    let mut total = 0;
+    for update in incorrect_updates.iter_mut() {
+        update.sort_by(|lhs, rhs| compare(*lhs, *rhs, rules.clone()));
+        total += update[update.len()/2];
+    }
+    return total;
+}
+
+fn compare(lhs: i32, rhs: i32, rules: HashMap<i32, HashSet<i32>>) -> Ordering {
+    if rules.contains_key(&rhs) && rules[&rhs].contains(&lhs) {
+        return Ordering::Less;
+    }
+    if rules.contains_key(&lhs) && rules[&lhs].contains(&rhs) {
+        return Ordering::Greater;
+    }
+    return Ordering::Equal;
 }
