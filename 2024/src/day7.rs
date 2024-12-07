@@ -5,10 +5,9 @@ fn part1(input: &str) -> u64 {
         .into_iter().map(|s| parse_equation(s.to_string()))
         .collect::<Vec<Equation>>();
 
-    println!("{:?}", eqs.len());
     let mut total = 0;
     for e in eqs {
-        if generate_possible_equations(e.clone()).iter().filter(|ee| evaluate_equation(ee.clone().clone())).count() > 0 {
+        if generate_possible_equations_part1(e.clone()).iter().filter(|ee| evaluate_equation(ee.clone().clone())).count() > 0 {
                 total += e.result;
         }
     }
@@ -29,9 +28,10 @@ struct Equation {
 enum Operator {
     Addition,
     Multiplication,
+    Concatenation,
 }
 
-fn generate_possible_equations(eq: Equation) -> Vec<Equation> {
+fn generate_possible_equations_part1(eq: Equation) -> Vec<Equation> {
     let operator_count = eq.operands.len() - 1;
     
     fn generate_operator_permutations(len: usize) -> Vec<Vec<Operator>> {
@@ -46,6 +46,43 @@ fn generate_possible_equations(eq: Equation) -> Vec<Equation> {
             perm_add.push(Operator::Multiplication);
             results.push(perm);
             results.push(perm_add);
+        }
+        return results;
+    }
+
+    let operator_permutations = generate_operator_permutations(operator_count);
+
+    let mut equations = vec![];
+    for operator_sequence in operator_permutations {
+        equations.push(Equation {
+            result: eq.result.clone(),
+            operands: eq.operands.clone(),
+            operators: operator_sequence,
+        });
+    }
+
+    return equations;
+}
+
+fn generate_possible_equations_part2(eq: Equation) -> Vec<Equation> {
+    let operator_count = eq.operands.len() - 1;
+    
+    fn generate_operator_permutations(len: usize) -> Vec<Vec<Operator>> {
+        if len == 0 {
+            return vec![vec![]];
+        }
+
+        let mut results = vec![];
+        for mut perm in generate_operator_permutations(len - 1) {
+            let mut perm_add = perm.clone();
+            let mut perm_mul = perm.clone();
+            perm.push(Operator::Addition);
+            perm_add.push(Operator::Multiplication);
+            perm_mul.push(Operator::Concatenation);
+
+            results.push(perm);
+            results.push(perm_add);
+            results.push(perm_mul);
         }
         return results;
     }
@@ -92,12 +129,26 @@ fn evaluate_equation(eq: Equation) -> bool {
             Operator::Multiplication => {
                 total *= b;
             },
+            Operator::Concatenation => {
+                total = (total.to_string() + &b.to_string()).parse::<u64>().unwrap();
+            }
         }
     }
     return total == eq.result;
 }
 
 #[aoc(day7, part2)]
-fn part2(input: &str) -> i32 {
-    todo!()
+fn part2(input: &str) -> u64 {
+    let eqs = input.lines().collect::<Vec<&str>>()
+        .into_iter().map(|s| parse_equation(s.to_string()))
+        .collect::<Vec<Equation>>();
+
+    let mut total = 0;
+    for e in eqs {
+        if generate_possible_equations_part2(e.clone()).iter().filter(|ee| evaluate_equation(ee.clone().clone())).count() > 0 {
+                total += e.result;
+        }
+    }
+
+    return total as u64;
 }
