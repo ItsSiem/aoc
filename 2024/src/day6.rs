@@ -92,5 +92,6 @@ fn step(map: String) -> String {
 
 #[aoc(day6, part2)]
 fn part2(input: &str) -> i32 {
-    todo!()
+    // I have given up
+    return 0;
 }
