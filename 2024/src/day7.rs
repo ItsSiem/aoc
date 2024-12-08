@@ -139,6 +139,8 @@ fn evaluate_equation(eq: Equation) -> bool {
 
 #[aoc(day7, part2)]
 fn part2(input: &str) -> u64 {
+    return 0; // this shit slow af
+
     let eqs = input.lines().collect::<Vec<&str>>()
         .into_iter().map(|s| parse_equation(s.to_string()))
         .collect::<Vec<Equation>>();
